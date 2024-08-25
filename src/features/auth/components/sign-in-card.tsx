@@ -26,9 +26,13 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [pending, setPending] = useState(false);
 
     const onProviderSignIn = (value: 'github' | 'google') => {
-        signIn(value);
+        setPending(true);
+        signIn(value).finally(() => {
+            setPending(false);
+        });
     };
 
     return (
@@ -42,7 +46,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
             <CardContent className="space-y-5 px-0 pb-0">
                 <form className="space-y-2.5">
                     <Input
-                        disabled={false}
+                        disabled={pending}
                         value={email}
                         onChange={e => setEmail(e.target.value)}
                         placeholder="Email"
@@ -50,7 +54,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
                         required
                     />
                     <Input
-                        disabled={false}
+                        disabled={pending}
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                         placeholder="Password"
@@ -69,7 +73,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
                 <Separator />
                 <div className="flex flex-col gap-y-2.5">
                     <Button
-                        disabled={false}
+                        disabled={pending}
                         onClick={() => onProviderSignIn('google')}
                         variant="outline"
                         size="lg"
@@ -79,7 +83,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
                         Continue with Google
                     </Button>
                     <Button
-                        disabled={false}
+                        disabled={pending}
                         onClick={() => onProviderSignIn('github')}
                         variant="outline"
                         size="lg"
