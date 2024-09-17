@@ -57,6 +57,7 @@ export const CreateWorkspacesModal = () => {
                         required
                         autoFocus
                         minLength={3}
+                        maxLength={80}
                         placeholder="Workspace name e.g. 'My Workspace', 'Personal', 'Home'"
                     />
                     <div className="flex justify-end">
