@@ -1,20 +1,42 @@
-import { AlertTriangle, Loader } from 'lucide-react';
+import {
+    AlertTriangle,
+    HashIcon,
+    Loader,
+    MessageSquareText,
+    SendHorizonal,
+} from 'lucide-react';
 
+import { useGetMembers } from '@/features/members/api/use-get-members';
+import { useGetChannels } from '@/features/channels/api/use-get-channels';
 import { useCurrentMember } from '@/features/members/api/use-current-member';
 import { useGetWorkspace } from '@/features/workspaces/api/use-get-workspace';
+import { useCreateChannelModal } from '@/features/channels/store/use-create-channel-modal';
 
+import { useChannelId } from '@/hooks/use-channel-id';
 import { useWorkspaceId } from '@/hooks/use-workspace-id';
 
+import { UserItem } from './user-item';
+import { SidebarItem } from './sidebar-item';
 import { WorkspaceHeader } from './workspace-header';
+import { WorkspaceSection } from './workspace section';
 
 export const WorkspaceSidebar = () => {
     const workspaceId = useWorkspaceId();
+    const channelId = useChannelId();
+
+    const [_open, setOpen] = useCreateChannelModal();
 
     const { data: member, isLoading: memberLoading } = useCurrentMember({
         workspaceId,
     });
     const { data: workspace, isLoading: workspaceLoading } = useGetWorkspace({
         id: workspaceId,
+    });
+    const { data: channels, isLoading: channelsLoading } = useGetChannels({
+        workspaceId,
+    });
+    const { data: members, isLoading: membersLoading } = useGetMembers({
+        workspaceId,
     });
 
     if (workspaceLoading || memberLoading) {
@@ -40,6 +62,49 @@ export const WorkspaceSidebar = () => {
                 workspace={workspace}
                 isAdmin={member.role === 'admin'}
             />
+            <div className="mt-3 flex flex-col px-2">
+                <SidebarItem
+                    id="threads"
+                    label="Threads"
+                    icon={MessageSquareText}
+                />
+                <SidebarItem
+                    id="drafts"
+                    label="Drafts & Sent"
+                    icon={SendHorizonal}
+                />
+            </div>
+            <WorkspaceSection
+                label="Channels"
+                hint="New channel"
+                onNew={
+                    member.role === 'admin' ? () => setOpen(true) : undefined
+                }
+            >
+                {channels?.map(item => (
+                    <SidebarItem
+                        key={item._id}
+                        id={item._id}
+                        label={item.name}
+                        icon={HashIcon}
+                        variant={channelId === item._id ? 'active' : 'default'}
+                    />
+                ))}
+            </WorkspaceSection>
+            <WorkspaceSection
+                label="Direct Messages"
+                hint="New direct message"
+                onNew={() => {}}
+            >
+                {members?.map(item => (
+                    <UserItem
+                        key={item._id}
+                        id={item._id}
+                        label={item.user.name}
+                        image={item.user.image}
+                    />
+                ))}
+            </WorkspaceSection>
         </div>
     );
 };

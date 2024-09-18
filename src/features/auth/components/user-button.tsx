@@ -1,6 +1,7 @@
 'use client';
 
 import { Loader, LogOut } from 'lucide-react';
+import { useAuthActions } from '@convex-dev/auth/react';
 
 import { useCurrentUser } from '../api/use-current-user';
 
@@ -11,7 +12,6 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useAuthActions } from '@convex-dev/auth/react';
 
 export const UserButton = () => {
     const { signOut } = useAuthActions();
@@ -40,7 +40,10 @@ export const UserButton = () => {
                 </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center" side="right" className="w-60">
-                <DropdownMenuItem onClick={() => signOut()} className="h-10">
+                <DropdownMenuItem
+                    onClick={() => signOut()}
+                    className="h-10 cursor-pointer"
+                >
                     <LogOut className="mr-2 size-4" />
                     Log out
                 </DropdownMenuItem>

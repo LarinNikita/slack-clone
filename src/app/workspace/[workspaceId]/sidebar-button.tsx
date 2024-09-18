@@ -1,11 +1,11 @@
 import { LucideIcon } from 'lucide-react';
-import { IconTree } from 'react-icons/lib';
+import { IconType } from 'react-icons/lib';
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface SidebarButtonProps {
-    icon: LucideIcon | IconTree;
+    icon: LucideIcon | IconType;
     label: string;
     isActive?: boolean;
 }
@@ -24,7 +24,6 @@ export const SidebarButton = ({
                     isActive && 'bg-accent/20',
                 )}
             >
-                {/* @ts-ignore */}
                 <Icon className="size-5 text-white transition-all group-hover:scale-110" />
             </Button>
             <span className="group-hover:text-accent text-[11px] text-white">

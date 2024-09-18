@@ -14,6 +14,9 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
     title: 'Slack',
     description: 'Real-Time Slack Clone',
+    icons: {
+        icon: '/logo.png',
+    },
 };
 
 export default function RootLayout({
