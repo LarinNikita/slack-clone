@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { Hint } from './hint';
 
 import { Button } from './ui/button';
+import { EmojiPopover } from './emoji-popover';
 
 type EditorValue = {
     image: File | null;
@@ -143,6 +144,12 @@ const Editor = ({
         }
     };
 
+    const onEmojiSelect = (emoji: any) => {
+        const quill = quillRef.current;
+
+        quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);
+    };
+
     //* Переменная isEmpty возвращает true, если текст считается пустым после удаления HTML-тегов и убирая пробелы, в противно случае false, если он не пустой.
     const isEmpty = text.replace(/<(.|\n)*?>/g, '').trim().length === 0;
 
@@ -167,16 +174,15 @@ const Editor = ({
                             <PiTextAa className="size-4" />
                         </Button>
                     </Hint>
-                    <Hint label="Emoji">
+                    <EmojiPopover hint="Emoji" onEmojiSelect={onEmojiSelect}>
                         <Button
                             disabled={disabled}
                             size="iconSm"
                             variant="ghost"
-                            onClick={() => {}}
                         >
                             <Smile className="size-4" />
                         </Button>
-                    </Hint>
+                    </EmojiPopover>
                     {variant === 'create' && (
                         <Hint label="Image">
                             <Button
