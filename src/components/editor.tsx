@@ -6,20 +6,20 @@ import {
     useState,
 } from 'react';
 
+import Image from 'next/image';
 import 'quill/dist/quill.snow.css';
 import { Delta, Op } from 'quill/core';
 import { MdSend } from 'react-icons/md';
 import { PiTextAa } from 'react-icons/pi';
-import { ImageIcon, Smile, XIcon } from 'lucide-react';
 import Quill, { type QuillOptions } from 'quill';
+import { ImageIcon, Smile, XIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
 import { Hint } from './hint';
+import { EmojiPopover } from './emoji-popover';
 
 import { Button } from './ui/button';
-import { EmojiPopover } from './emoji-popover';
-import Image from 'next/image';
 
 type EditorValue = {
     image: File | null;
@@ -86,8 +86,25 @@ const Editor = ({
                         enter: {
                             key: 'Enter',
                             handler: () => {
-                                //TODO submit form
-                                return;
+                                const text = quill.getText();
+                                const addedImage =
+                                    imageElementRef.current?.files?.[0] || null;
+
+                                const isEmpty =
+                                    !addedImage &&
+                                    text.replace(/<(.|\n)*?>/g, '').trim()
+                                        .length === 0;
+
+                                if (isEmpty) return;
+
+                                const body = JSON.stringify(
+                                    quill.getContents(),
+                                );
+
+                                submitRef.current?.({
+                                    body,
+                                    image: addedImage,
+                                });
                             },
                         },
                         shift_enter: {
@@ -153,8 +170,9 @@ const Editor = ({
         quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);
     };
 
-    //* Переменная isEmpty возвращает true, если текст считается пустым после удаления HTML-тегов и убирая пробелы, в противно случае false, если он не пустой.
-    const isEmpty = text.replace(/<(.|\n)*?>/g, '').trim().length === 0;
+    //* Переменная isEmpty возвращает true, если текст считается пустым после удаления HTML-тегов, убирая пробелы и если нет изображения, в противно случае false, если он не пустой и есть изображение.
+    const isEmpty =
+        !image && text.replace(/<(.|\n)*?>/g, '').trim().length === 0;
 
     return (
         <div className="flex flex-col">
@@ -165,7 +183,12 @@ const Editor = ({
                 onChange={event => setImage(event.target.files![0])}
                 className="hidden"
             />
-            <div className="flex flex-col overflow-hidden rounded-md border border-slate-200 bg-white transition focus-within:shadow-sm focus-visible:border-slate-300">
+            <div
+                className={cn(
+                    'flex flex-col overflow-hidden rounded-md border border-slate-200 bg-white transition focus-within:shadow-sm focus-visible:border-slate-300',
+                    disabled && 'opacity-50',
+                )}
+            >
                 <div ref={containerRef} className="ql-custom h-full" />
                 {!!image && (
                     <div className="p-2">
@@ -234,7 +257,7 @@ const Editor = ({
                                 disabled={disabled}
                                 size="sm"
                                 variant="outline"
-                                onClick={() => {}}
+                                onClick={onCancel}
                             >
                                 Cancel
                             </Button>
@@ -242,7 +265,14 @@ const Editor = ({
                                 disabled={disabled || isEmpty}
                                 size="sm"
                                 className="bg-[#007a5a] text-white hover:bg-[#007a5a]/80"
-                                onClick={() => {}}
+                                onClick={() => {
+                                    onSubmit({
+                                        body: JSON.stringify(
+                                            quillRef.current?.getContents(),
+                                        ),
+                                        image,
+                                    });
+                                }}
                             >
                                 Save
                             </Button>
@@ -251,7 +281,14 @@ const Editor = ({
                     {variant === 'create' && (
                         <Button
                             disabled={disabled || isEmpty}
-                            onClick={() => {}}
+                            onClick={() => {
+                                onSubmit({
+                                    body: JSON.stringify(
+                                        quillRef.current?.getContents(),
+                                    ),
+                                    image,
+                                });
+                            }}
                             size="iconSm"
                             className={cn(
                                 'ml-auto',
