@@ -121,3 +121,8 @@ body,
 .ql-renderer {
     padding: 0 !important;
 }
+
+.messages-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #dcdcdc #f8f8f8;
+}
