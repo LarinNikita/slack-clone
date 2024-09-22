@@ -87,7 +87,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
                         type="submit"
                         className="w-full"
                         size="lg"
-                        disabled={false}
+                        disabled={pending}
                     >
                         Continue
                     </Button>
